@@ -39,9 +39,9 @@ function Register() {
         <img src="https://static.vecteezy.com/system/resources/thumbnails/003/689/228/small_2x/online-registration-or-sign-up-login-for-account-on-smartphone-app-user-interface-with-secure-password-mobile-application-for-ui-web-banner-access-cartoon-people-illustration-vector.jpg" alt="" />
       </div>
       <div className='child2'>
-          <p className='mt-3 p fs-5'>Alredy a member? <Link to='/login'>Login</Link> and continue where you left off.</p>
+          <p className='mt-3 p fs-5'>Already a member? <Link to='/login'>Login</Link> and continue where you left off.</p>
           <h1>Create Account</h1>
-          {err.length!=0&&<p className='text-danger'>{err}</p>}
+          {err.length!==0 && <p className='text-danger'>{err}</p>}
           <form className='mx-auto mt-3 p-4 mb-5 bg-light' onSubmit={handleSubmit(onUserRegister)}>
             <div className="mb-3">
               <label htmlFor="username" className='form-label'>Username</label>
@@ -62,20 +62,53 @@ function Register() {
               {errors.confirmPassword?.type === 'required' && <p className="text-danger">*Password is required</p>}
               {errors.confirmPassword && <p className="text-danger">*{errors.confirmPassword.message}</p>}
             </div>
+            
             <div className="mb-3">
               <label htmlFor="email" className='form-label'>Email</label>
-              <input type="email" id='email' className='form-control' {...register("email", { required: true })} />
-              {errors.email?.type === 'required' && <p className="text-danger">*Email is required</p>}
+              <input 
+                type="email" 
+                id='email' 
+                className='form-control' 
+                {...register("email", { 
+                  required: true, 
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: "Invalid email address"
+                  }
+                })} 
+              />
+              {errors.email?.type === 'required' && <p className='text-danger lead'>*Email is required</p>}
+              {errors.email?.type === 'pattern' && <p className='text-danger lead'>{errors.email.message}</p>}
             </div>
+
             <div className="mb-3">
               <label htmlFor="mobile" className='form-label'>Mobile Number</label>
-              <input type="number" id='mobile' className='form-control' {...register("mobile", { required: true,minLength:10,maxLength:10 })} />
-              {errors.mobile?.type === 'required' && <p className="text-danger">*Mobile Number is required</p>}
-              {errors.mobile?.type === 'minLength' && <p className="text-danger">*Mobile Number should contain 10 digits</p>}
-              {errors.mobile?.type === 'maxLength' && <p className="text-danger">*Mobile Number should contain 10 digits only</p>}
+              <input 
+                type="text" 
+                id='mobile' 
+                className='form-control' 
+                {...register("mobile", { 
+                  required: true, 
+                  minLength: 10, 
+                  maxLength: 10, 
+                  pattern: {
+                    value: /^[1-9]{1}[0-9]{9}$/, 
+                    message: "Invalid phone number"
+                  },
+                  validate: (value) => {
+                    return !/^(\d)\1+$/.test(value) || "Phone number cannot be repetitive digits";
+                  }
+                })} 
+              />
+              {errors.mobile?.type === 'required' && <p className='text-danger lead'>*Mobile Number is required</p>}
+              {errors.mobile?.type === 'minLength' && <p className='text-danger lead'>*Length should be 10</p>}
+              {errors.mobile?.type === 'maxLength' && <p className='text-danger lead'>*Length should be 10</p>}
+              {errors.mobile?.type === 'pattern' && <p className='text-danger lead'>{errors.mobile.message}</p>}
+              {errors.mobile?.type === 'validate' && <p className='text-danger lead'>{errors.mobile.message}</p>}
             </div>
+            
             <div className='button mt-4'>
-            <button className="b w-50">Register</button>
+              <button className="b w-50">Register</button>
             </div>
           </form>
       </div>

@@ -62,7 +62,7 @@ function ViewRegisteredUsers() {
                 <tr>
                   <th>S.No</th>
                   <th>{isTeamEvent ? 'Team Leader' : 'Student Name'}</th>
-                  <th>Phone Number</th>
+                  <th>Roll No</th>
                   <th>Details</th>
                 </tr>
               </thead>
@@ -71,7 +71,7 @@ function ViewRegisteredUsers() {
                   <tr key={registration._id}>
                     <td>{index + 1}</td>
                     <td>{registration.fullname_1 ? registration.fullname : registration.fullname}</td>
-                    <td>{registration.phone}</td>
+                    <td>{registration.rollno}</td>
                     <td>
                       <button className='btn btn-info' onClick={() => handleViewDetails(index)}>
                         View Details

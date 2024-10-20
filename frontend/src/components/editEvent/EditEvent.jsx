@@ -101,6 +101,7 @@ function EditEvent() {
     closeModal();
     navigate('/viewEvents');
   }
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className='editEvent'>
@@ -119,7 +120,7 @@ function EditEvent() {
               </div>
               <div className="mb-3">
                 <label htmlFor="date" className='form-label'>Event Organization Date</label>
-                <input type="date" id='date' className='form-control' {...register("date", { required: true })} />
+                <input type="date" id='date' className='form-control' {...register("date", { required: true })} min={today} />
                 {errors.date && <p className="text-danger fs-5">*Date is required</p>}
               </div>
             </div>
@@ -144,9 +145,29 @@ function EditEvent() {
                 {errors.location && <p className="text-danger fs-5">*Location is required</p>}
               </div>
               <div className="mb-3">
-                <label htmlFor="conInfo" className='form-label'>Contact Information</label>
-                <input type="number" id='conInfo' className='form-control' {...register("conInfo", { required: true, minLength: 10, maxLength: 10 })} />
-                {errors.conInfo && <p className="text-danger fs-5">*Contact Info should contain 10 digits</p>}
+              <label htmlFor="conInfo" className='form-label'>Contact Information</label>
+                <input 
+                  type="text" 
+                  id='conInfo' 
+                  className='form-control' 
+                  {...register("conInfo", { 
+                    required: true, 
+                    minLength: 10, 
+                    maxLength: 10, 
+                    pattern: {
+                      value: /^[1-9]{1}[0-9]{9}$/,
+                      message: "Invalid phone number"
+                    },
+                    validate: (value) => {
+                      return !/^(\d)\1+$/.test(value) || "Phone number cannot be repetitive digits";
+                    }
+                  })} 
+                />
+                {errors.conInfo?.type === 'required' && <p className='text-danger lead'>*Mobile Number is required</p>}
+                {errors.conInfo?.type === 'minLength' && <p className='text-danger lead'>*Length should be 10</p>}
+                {errors.conInfo?.type === 'maxLength' && <p className='text-danger lead'>*Length should be 10</p>}
+                {errors.conInfo?.type === 'pattern' && <p className='text-danger lead'>{errors.conInfo.message}</p>}
+                {errors.conInfo?.type === 'validate' && <p className='text-danger lead'>{errors.conInfo.message}</p>}
               </div>
             </div>
 

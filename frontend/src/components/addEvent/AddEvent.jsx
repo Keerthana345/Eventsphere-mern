@@ -12,7 +12,7 @@ function AddEvent() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [isTeamEvent, setIsTeamEvent] = useState(false); 
+  const [isTeamEvent, setIsTeamEvent] = useState(false);
 
   function modalDisplay() {
     setShowModal(true);
@@ -27,10 +27,10 @@ function AddEvent() {
     try {
       let res = await fetch('http://localhost:4000/event-api/event', {
         method: "POST",
-        headers: { "Content-type": "application/json","Authorization": `Bearer ${sessionStorage.getItem('token')}` },
+        headers: { "Content-type": "application/json", "Authorization": `Bearer ${sessionStorage.getItem('token')}` },
         body: JSON.stringify(eventData)
       });
-      let data=await res.json()
+      let data = await res.json();
       if (data.message === 'event created') {
         modalDisplay();
       }
@@ -44,18 +44,17 @@ function AddEvent() {
     navigate('/managerDashboard');
   }
 
-  function Dashboard() {
-    navigate('/managerDashboard');
-  }
-
   function view() {
     closeModal();
     navigate('/viewEvents');
   }
 
+  const today = new Date().toISOString().split('T')[0];
+  const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   return (
     <div className='addEvent'>
-      <div className='fs-2 ms-4 mt-2 back' onClick={Dashboard}>
+      <div className='fs-2 ms-4 mt-2 back' onClick={dashboard}>
         <IoArrowBackCircleSharp />
       </div>
       <div className='child'>
@@ -70,19 +69,19 @@ function AddEvent() {
               </div>
               <div className="mb-3">
                 <label htmlFor="date" className='form-label'>Event Organization Date</label>
-                <input type="date" id='date' className='form-control' {...register("date", { required: true })} />
+                <input type="date" id='date' className='form-control' {...register("date", { required: true })} min={today} />
                 {errors.date?.type === 'required' && <p className="text-danger fs-5">*Date is required</p>}
               </div>
             </div>
             <div className="flex">
               <div className="mb-3">
                 <label htmlFor="fromTime" className='form-label'>From Time</label>
-                <input type="time" id='fromTime' className='form-control' {...register("fromTime", { required: true })} />
+                <input type="time" id='fromTime' className='form-control' {...register("fromTime", { required: true })} min={today === new Date().toISOString().split('T')[0] ? currentTime : ''} />
                 {errors.fromTime?.type === 'required' && <p className="text-danger fs-5">*From Time is required</p>}
               </div>
               <div className="mb-3">
                 <label htmlFor="toTime" className='form-label'>To Time</label>
-                <input type="time" id='toTime' className='form-control' {...register("toTime", { required: true })} />
+                <input type="time" id='toTime' className='form-control' {...register("toTime", { required: true })} min={today === new Date().toISOString().split('T')[0] ? currentTime : ''} />
                 {errors.toTime?.type === 'required' && <p className="text-danger fs-5">*To Time is required</p>}
               </div>
             </div>
@@ -94,10 +93,28 @@ function AddEvent() {
               </div>
               <div className="mb-3">
                 <label htmlFor="conInfo" className='form-label'>Contact Information</label>
-                <input type="number" id='conInfo' className='form-control' {...register("conInfo", { required: true, minLength: 10, maxLength: 10 })} />
-                {errors.conInfo?.type === 'required' && <p className="text-danger fs-5">*Contact Info is required</p>}
-                {errors.conInfo?.type === 'minLength' && <p className="text-danger fs-5">*Contact Info should contain 10 digits</p>}
-                {errors.conInfo?.type === 'maxLength' && <p className="text-danger fs-5">*Contact Info should contain 10 digits only</p>}
+                <input 
+                  type="text" 
+                  id='conInfo' 
+                  className='form-control' 
+                  {...register("conInfo", { 
+                    required: true, 
+                    minLength: 10, 
+                    maxLength: 10, 
+                    pattern: {
+                      value: /^[1-9]{1}[0-9]{9}$/,
+                      message: "Invalid phone number"
+                    },
+                    validate: (value) => {
+                      return !/^(\d)\1+$/.test(value) || "Phone number cannot be repetitive digits";
+                    }
+                  })} 
+                />
+                {errors.conInfo?.type === 'required' && <p className='text-danger lead'>*Mobile Number is required</p>}
+                {errors.conInfo?.type === 'minLength' && <p className='text-danger lead'>*Length should be 10</p>}
+                {errors.conInfo?.type === 'maxLength' && <p className='text-danger lead'>*Length should be 10</p>}
+                {errors.conInfo?.type === 'pattern' && <p className='text-danger lead'>{errors.conInfo.message}</p>}
+                {errors.conInfo?.type === 'validate' && <p className='text-danger lead'>{errors.conInfo.message}</p>}
               </div>
             </div>
             <div className="mb-3">
@@ -144,7 +161,7 @@ function AddEvent() {
               {errors.description?.type === 'required' && <p className='text-danger fs-5'>*Description is required</p>}
             </div>
             <div className='button mt-4'>
-              <button className="btn btn-secondary">Add Event</button>
+              <button type='submit' className="btn btn-secondary">Add Event</button>
             </div>
           </form>
         </div>
@@ -153,16 +170,16 @@ function AddEvent() {
         <div className="modal-overlay m1">
           <div className="modal-dialog m">
             <div className="modal-content">
-              <h5>Your event has been created and successfully added to your Dashboard..</h5>
-              <button className='btn btn-secondary mt-3' onClick={dashboard}><MdDashboard />    Back to Dashboard</button>
-              <button className='btn btn-secondary mt-3' onClick={view}><MdOutlineRemoveRedEye />    View added Events</button>
+              <h5>Your event has been created and successfully added to your Dashboard.</h5>
+              <button className='btn btn-secondary mt-3' onClick={dashboard}><MdDashboard /> Back to Dashboard</button>
+              <button className='btn btn-secondary mt-3' onClick={view}><MdOutlineRemoveRedEye /> View added Events</button>
               <button className="btn btn-primary mt-3" onClick={closeModal}>Close</button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default AddEvent;

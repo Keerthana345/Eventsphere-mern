@@ -58,7 +58,7 @@
     z-index: 1000; 
 }
 
-.register-page .modal-overlay .modal-dialog {
+.register-page .modal-overlay .modal-content {
     width: 400px;
     box-shadow: 5px 5px 5px grey, -5px -5px 5px grey;
     background-color: white;
