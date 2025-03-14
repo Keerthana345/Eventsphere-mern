@@ -93,7 +93,7 @@ function RegisteredUser() {
                   <strong>Section:</strong> {registerData.sec}
                 </p>
                 <p className='fs-5'>
-                  <strong>Phone Number:</strong> {registerData.phone}
+                  <strong>Phone Number:</strong> {registerData.mobile}
                 </p>
 
                 <h2 className='mb-4'>Team Members Information</h2>
@@ -126,7 +126,7 @@ function RegisteredUser() {
                   <strong>Section:</strong> {registerData.sec}
                 </p>
                 <p className='fs-5'>
-                  <strong>Phone Number:</strong> {registerData.phone}
+                  <strong>Phone Number:</strong> {registerData.mobile}
                 </p>
               </>
             )}
